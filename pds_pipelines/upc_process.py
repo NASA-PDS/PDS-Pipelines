@@ -20,7 +20,6 @@ from pysis.exceptions import ProcessError
 
 from pds_pipelines.redis_lock import RedisLock
 from pds_pipelines.redis_queue import RedisQueue
-from pds_pipelines.recipe import Recipe
 from pds_pipelines.process import Process
 from pds_pipelines.pvl_utils import load_pvl, find_keyword, PVLDecoderNoScientificNotation
 from pds_pipelines.db import db_connect
