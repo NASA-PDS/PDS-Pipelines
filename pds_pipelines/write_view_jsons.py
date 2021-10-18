@@ -1,4 +1,5 @@
 from pds_pipelines.db import db_connect
+from pds_pipelines.models.upc_models import Instruments
 from pds_pipelines.config import upc_db, summaries_path
 import os
 import json
@@ -14,13 +15,6 @@ queries = {
         JOIN search_terms s on (d.upcid=s.upcid)
         GROUP by d.instrumentid, i.instrument, i.mission, i.spacecraft, d.targetid, t.targetname, t.system, i.displayname
         """,
-    # 'band_summary': """
-    #     SELECT DISTINCT i.instrumentid, i.instrument, j.jsonkeywords -> 'caminfo' -> 'isislabel' -> 'isiscube' -> 'bandbin' ->> 'filtername' AS filtername,
-    #     j.jsonkeywords -> 'caminfo' -> 'isislabel' -> 'isiscube' -> 'bandbin' -> 'center' ->> 0 AS center
-    #     FROM instruments i
-    #     JOIN datafiles d on (d.instrumentid = i.instrumentid)
-    #     JOIN json_keywords j on (d.upcid = j.upcid)
-    #     """,
    'target_summary': """
        SELECT s2.displayname, s2.system, s1.target_count
        FROM
@@ -31,6 +25,16 @@ queries = {
        on s1.targetid = s2.targetid
     """
 }
+
+band_summary_query ="""
+        SELECT DISTINCT i.instrumentid, i.instrument,
+        j.jsonkeywords -> 'caminfo' -> 'isislabel' -> 'isiscube' -> 'bandbin' ->> 'filtername' AS filtername,
+        j.jsonkeywords -> 'caminfo' -> 'isislabel' -> 'isiscube' -> 'bandbin' -> 'center' ->> 0 AS center
+        FROM datafiles d
+        JOIN json_keywords j on (d.upcid = j.upcid)
+        JOIN instruments i on (d.instrumentid = i.instrumentid)
+        AND d.instrumentid in (SELECT instrumentid FROM instruments WHERE instruments.mission = '{}')
+        """
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Create view JSONs.')
@@ -51,15 +55,20 @@ def main(user_args):
     Session, _ = db_connect(upc_db)
     session = Session()
 
+    missions = [i.mission for i in session.query(Instruments).distinct(Instruments.mission).all()]
+
+    for mission in missions:
+        queries['band_summary_{}'.format(mission.lower().replace(" ", "_"))] = band_summary_query.format(mission)
+
     for key in queries:
         json_query = "with t AS ({}) SELECT json_agg(t) FROM t;".format(queries[key])
+        print("Beginning {} Query".format(key))
         output = session.execute(json_query)
         print("Finished {} Query".format(key))
         json_output = json.dumps([dict(line) for line in output])
 
         print("Writing Json for {}".format(key))
-
-        with open(path + key + ".json", "w") as json_file:
+        with open(os.path.join(path, key + ".json"), "w") as json_file:
             json_file.write(json_output)
         print("Finished view generation for {}".format(key))
 
