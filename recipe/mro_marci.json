@@ -8,6 +8,10 @@
                 "to": "{{no_extension_inputfile}}.cub",
                 "flip": "no"
             },
+            "isis.catlab": {
+                "from_": "{{inputfile}}",
+                "to": "{{catlab_output}}"
+            },
             "isis.spiceinit": {
                 "from_": "{{no_extension_inputfile}}.even.cub",
                 "cknadir": "yes",

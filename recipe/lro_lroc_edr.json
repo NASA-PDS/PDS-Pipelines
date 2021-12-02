@@ -8,14 +8,14 @@
                 "from_": "{{inputfile}}",
                 "to": "{{no_extension_inputfile}}.cub"
             },
+            "isis.catlab": {
+                "from_": "{{inputfile}}",
+                "to": "{{catlab_output}}"
+            },
             "isis.spiceinit": {
                 "from_": "{{no_extension_inputfile}}.cub",
                 "cknadir": "no",
                 "cksmithed": "yes"
-            },
-            "isis.catlab": {
-                "from_": "{{inputfile}}",
-                "to": "{{catlab_output}}"
             },
             "isis.caminfo": {
                 "from_": "{{no_extension_inputfile}}.cub",
