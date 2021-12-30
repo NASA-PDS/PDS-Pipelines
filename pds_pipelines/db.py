@@ -1,3 +1,4 @@
+from urllib.parse import quote_plus
 from sqlalchemy import create_engine
 from pds_pipelines.config import credentials as c
 from sqlalchemy.orm import sessionmaker
@@ -23,7 +24,7 @@ def db_connect(cred):
     """
     database_url = 'postgresql://{}:{}@{}:{}/{}'
     engine = create_engine(database_url.format(c[cred]['user'],
-                                               c[cred]['pass'],
+                                               quote_plus(c[cred]['pass']),
                                                c[cred]['host'],
                                                c[cred]['port'],
                                                c[cred]['db']), pool_pre_ping=True)
