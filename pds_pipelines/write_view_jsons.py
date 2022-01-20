@@ -32,8 +32,8 @@ band_summary_query ="""
         j.jsonkeywords -> 'caminfo' -> 'isislabel' -> 'isiscube' -> 'bandbin' -> 'center' ->> 0 AS center
         FROM datafiles d
         JOIN json_keywords j on (d.upcid = j.upcid)
-        JOIN instruments i on (d.instrumentid = i.instrumentid)
-        AND d.instrumentid in (SELECT instrumentid FROM instruments WHERE instruments.mission = '{}')
+        JOIN instruments i on (i.instrumentid in (SELECT instrumentid FROM instruments WHERE instruments.mission = '{0}'))
+        WHERE  d.instrumentid in (SELECT instrumentid FROM instruments WHERE instruments.mission = '{0}')
         """
 
 def parse_args():
@@ -57,13 +57,19 @@ def main(user_args):
 
     missions = [i.mission for i in session.query(Instruments).distinct(Instruments.mission).all()]
 
+    session.close()
+
     for mission in missions:
         queries['band_summary_{}'.format(mission.lower().replace(" ", "_"))] = band_summary_query.format(mission)
 
     for key in queries:
         json_query = "with t AS ({}) SELECT json_agg(t) FROM t;".format(queries[key])
         print("Beginning {} Query".format(key))
+
+        session = Session()
         output = session.execute(json_query)
+        session.close()
+
         print("Finished {} Query".format(key))
         json_output = json.dumps([dict(line) for line in output])
 
