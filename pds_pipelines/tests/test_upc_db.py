@@ -88,7 +88,7 @@ def session(tables, request):
     return session
 
 @pytest.fixture
-def session_maker(tables, request):
+def session_maker(tables):
     Session, _ = db_connect('upc_test')
     return Session
 
@@ -152,6 +152,15 @@ def test_datafiles_insert(session):
 
     assert datafile_qobj.upcid == 2
 
+def test_datafiles_update(session):
+    models.Instruments.create(session, instrument='FAKE_CAMERA2', spacecraft='FAKE_CRAFT2')
+
+    datafile_attributes = {'upcid':1, 'instrumentid': 2, 'targetid': 1, 'source': '/Path/to/pds/file.img'}
+    datafile_qobj = models.DataFiles.create(session, **datafile_attributes)
+
+    assert datafile_qobj.upcid == 1
+    assert datafile_qobj.instrumentid == 2
+
 def test_search_terms_insert(session):
     datafile_attributes = {'upcid': None, 'source': '/Path/to/the/file.img'}
     datafile_qobj = models.DataFiles.create(session, **datafile_attributes)
@@ -160,6 +169,13 @@ def test_search_terms_insert(session):
     search_terms_qobj = models.SearchTerms.create(session, **search_term_attributes)
 
     assert search_terms_qobj.upcid == 2
+
+def test_search_terms_update(session):
+    search_term_attributes = {'upcid': 1, 'minimumemission': 0.0}
+    search_terms_qobj = models.SearchTerms.create(session, **search_term_attributes)
+
+    assert search_terms_qobj.upcid == 1
+    assert search_terms_qobj.minimumemission == 0.0
 
 def test_search_terms_no_datafile(session):
     search_term_attributes = {'upcid': 2}
@@ -171,11 +187,18 @@ def test_json_keywords_insert(session):
     datafile_qobj = models.DataFiles.create(session, **datafile_attributes)
 
     json_keywords_attributes = {'upcid': 2}
-    search_terms_qobj = models.JsonKeywords.create(session, **json_keywords_attributes)
+    json_keywords_qobj = models.JsonKeywords.create(session, **json_keywords_attributes)
 
-    assert search_terms_qobj.upcid == 2
+    assert json_keywords_qobj.upcid == 2
+
+def test_json_keywords_update(session):
+    json_keywords_attributes = {'upcid': 1, 'jsonkeywords': {'some_fruit': 'Banana'}}
+    json_keywords_qobj = models.JsonKeywords.create(session, **json_keywords_attributes)
+
+    assert json_keywords_qobj.upcid == 1
+    assert json_keywords_qobj.jsonkeywords['some_fruit'] == 'Banana'
 
 def test_json_keywords_no_datafile(session):
     json_keywords_attributes = {'upcid': 2}
     with pytest.raises(sqlalchemy.exc.IntegrityError):
-        search_terms_qobj = models.JsonKeywords.create(session, **json_keywords_attributes)
+        json_keywords_qobj = models.JsonKeywords.create(session, **json_keywords_attributes)

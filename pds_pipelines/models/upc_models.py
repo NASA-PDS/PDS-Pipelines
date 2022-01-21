@@ -33,26 +33,6 @@ class BaseMixin(object):
         session.close()
 
 
-def create_table(keytype, *args, **kwargs):
-    """ Returns a table based on the keytype description.
-
-    Parameters
-    ----------
-    keytype : str
-        A type description of the table's value.
-
-    Returns
-    -------
-    out : :class:`.Instruments or :class:`.DataFiles or :class:`.Targets
-        A SQLAlchemy table with type specific column specification.
-    """
-
-    try:
-        return class_map[keytype.lower()](**kwargs)
-    except NameError:
-        print('Keytype {} not found\n'.format(keytype))
-
-
 class DataFiles(BaseMixin, Base):
     __tablename__ = 'datafiles'
     upcid = Column(Integer, primary_key=True, autoincrement = True)
@@ -219,13 +199,6 @@ class JsonKeywords(BaseMixin, Base):
         session.commit()
 
         return json_keywords_qobj
-
-class_map = {
-    'datafiles': DataFiles,
-    'instruments': Instruments,
-    'targets' : Targets,
-    'search_terms': SearchTerms
-}
 
 def create_upc_database():
     try:

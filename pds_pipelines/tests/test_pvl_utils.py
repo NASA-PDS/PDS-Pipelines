@@ -6,12 +6,13 @@ import tempfile
 from unittest.mock import patch, PropertyMock, Mock
 from unittest import mock
 
-from pds_pipelines.pvl_utils import find_keyword, lower_keys, load_pvl
+from pds_pipelines.pvl_utils import find_keyword, lower_keys, load_pvl, PVLDecoderNoScientificNotation
 
 @pytest.mark.parametrize("object, key, group, expected",
                         [(pvl.PVLModule({"Banana": {"Apple": "Fruit"}}),'Apple', None, 'Fruit'),
                          (pvl.PVLModule({"Banana": {"Apple": "Fruit"}}),'Orange', None, None),
-                         (pvl.PVLModule({"Banana": {"Apple": "Fruit"}}),'Apple', 'Banana', 'Fruit')])
+                         (pvl.PVLModule({"Banana": {"Apple": "Fruit"}}),'Apple', 'Banana', 'Fruit'),
+                         (None, None, None, None)])
 def test_find_keyword(expected, group, key, object):
     output_val = find_keyword(object, key, group)
     assert output_val == expected

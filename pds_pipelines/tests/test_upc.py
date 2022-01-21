@@ -32,7 +32,6 @@ def spiceinit(from_):
 pysis.isis.spiceinit = spiceinit
 
 import pds_pipelines.models.upc_models as models
-from pds_pipelines.process import Process
 from pds_pipelines import utils
 from pds_pipelines.upc_update import get_target_name, get_instrument_name, \
                                       get_spacecraft_name, create_datafiles_atts, \

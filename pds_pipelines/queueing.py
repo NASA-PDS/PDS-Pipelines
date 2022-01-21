@@ -115,6 +115,7 @@ def has_space(elements, src_path, dest_path, ratio):
 
 
 class QueueProcess():
+
     def __init__(self, process_name, archive, volume=None, search=None, log_level='INFO', namespace=None):
         self.process_name = process_name
         self.archive = archive
@@ -275,8 +276,6 @@ class DIQueueProcess(QueueProcess):
         -------
         None
         """
-        path = self.get_archive_att('path')
-        fname = path+element
         self.ready_queue.QueueAdd((element, self.archive))
 
 
