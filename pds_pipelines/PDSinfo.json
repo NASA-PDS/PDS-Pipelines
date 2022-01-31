@@ -128,7 +128,7 @@
     "messenger_mdis": {
         "archiveid": "14",
         "path": "/pds_san/PDS_Archive/MESSENGER/",
-	"upc_reqs": [".IMG"]
+	"upc_reqs": ["MSGRMDS_1001/DATA",".IMG"]
     },
     "mgs_moc": {
         "archiveid": "44",

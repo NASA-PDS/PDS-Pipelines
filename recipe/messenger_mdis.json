@@ -12,6 +12,10 @@
                 "cknadir": "yes",
                 "cksmithed": "yes"
             },
+            "isis.catlab": {
+                "from_": "{{inputfile}}",
+                "to": "{{catlab_output}}"
+            },
             "isis.caminfo": {
                 "from_": "{{no_extension_inputfile}}.cub",
                 "to": "{{cam_info_file}}",
@@ -60,15 +64,6 @@
             "isis.mdis2isis": {
                 "from_": "{{inputfile}}",
                 "to": "{{no_extension_inputfile}}.cub"
-            },
-            "isis.spiceinit": {
-                "from_": "{{no_extension_inputfile}}.cub",
-                "cknadir": "yes",
-                "cksmithed": "yes"
-            },
-            "isis.mdiscal": {
-                "from_": "{{no_extension_inputfile}}.cub",
-                "to": "{{no_extension_inputfile}}.cal.cub"
             },
             "gdal_translate": {
                 "outputType": "Byte",
